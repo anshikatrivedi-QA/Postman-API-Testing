@@ -49,7 +49,5 @@ The user ID generated during the POST request is stored and reused in subsequent
 **Note**: Keep your personal access token private. Do not commit real API tokens to GitHub.
 
 # Future Improvements
-
-- Data-driven testing using CSV/JSON files.
 - API automation using Playwright.
 - Automated test execution using GitHub Actions.
