@@ -11,9 +11,12 @@ This project demonstrates REST API functional testing using Postman and the GoRE
 - Git
 - GitHub
 
-# API Testing Scenarios
+# Collection Structure
 
-The project covers the following CRUD operations:
+- **request chaining, dynamic data generation, response validations**: the CRUD workflow
+- **negative testing**: invalid and missing data, duplicate data and authentication failure
+
+# CRUD Scenarios
 
 | HTTP Method | Operation | Description |
 |---|---|---|
@@ -22,22 +25,36 @@ The project covers the following CRUD operations:
 | PUT | Update User | Update user information |
 | DELETE | Delete User | Delete the user |
 
-# Testing Performed
-
-- Validated HTTP methods and API requests.
-- Checked response status codes.
-- Validated response headers and cookies.
-- Verified response body fields and values.
-- Used JavaScript and Postman assertions for response validation.
-- Used collection variables to store and reuse user IDs.
-- Implemented request chaining to execute CRUD operations in sequence.
-- Used dynamic test data generation for user creation.
-
-# Request Workflow
-
-POST → GET → PUT → DELETE
+**Request Workflow:** POST → GET → PUT → DELETE
 
 The user ID generated during the POST request is stored and reused in subsequent requests.
+
+# Negative Testing
+
+| Scenario | Method | Expected Status | Validation |
+|---|---|---|---|
+| Empty name | POST | 422 | Field is `name`, message "can't be blank" |
+| Invalid email | POST | 422 | Field is `email`, message "is invalid" |
+| Empty gender | POST | 422 | Field is `gender` |
+| Invalid gender | POST | 422 | Field is `gender` |
+| Empty status | POST | 422 | Field is `status`, message "can't be blank" |
+| Duplicate email | POST | 422 | Field is `email`, message "has already been taken" |
+| Invalid token (no auth) | POST | 401 | Message "Authentication failed" |
+
+# Testing Performed
+
+- Validated HTTP methods, status codes and status text.
+- Validated response headers (content-type).
+- Verified response body fields, data types and values.
+- Validated response time against a threshold.
+- Validated the response against a JSON schema.
+- Used collection variables for request chaining.
+- Generated dynamic test data in pre-request scripts.
+- Tested error handling with negative scenarios.
+
+
+# Screenshot
+
 
 # How to Run
 
@@ -45,6 +62,7 @@ The user ID generated during the POST request is stored and reused in subsequent
 2. Import the Postman collection into Postman.
 3. Configure your GoREST Bearer Token.
 4. Run individual requests or execute the collection using Collection Runner.
+
 
 **Note**: Keep your personal access token private. Do not commit real API tokens to GitHub.
 
