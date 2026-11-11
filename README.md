@@ -55,6 +55,13 @@ The user ID generated during the POST request is stored and reused in subsequent
 
 # Screenshot
 
+<img width="1366" height="768" alt="Negative test results" src="https://github.com/user-attachments/assets/3fcb7583-c4a9-4e47-ad98-16841d875185" />
+
+<img width="1366" height="768" alt="Negative test results" src="https://github.com/user-attachments/assets/e83d96ab-f3e1-4026-b2d5-b55a4113cf63" />
+
+<img width="1366" height="768" alt="Collection run results" src="https://github.com/user-attachments/assets/3568aa4c-ab28-4f19-b35b-9fdad6637648" />
+
+<img width="259" height="600" alt="Collection folders" src="https://github.com/user-attachments/assets/9a331ebb-ae1f-4d51-ac8a-fa00736fa357" />
 
 # How to Run
 
