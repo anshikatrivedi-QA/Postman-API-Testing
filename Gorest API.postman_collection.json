@@ -8,189 +8,590 @@
   },
   "item": [
     {
-      "name": "create",
-      "event": [
+      "name": "negative testing",
+      "item": [
         {
-          "listen": "prerequest",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "var random = Math.random().toString(36).substring(2);\n\nvar useremail = \"jim\" + random + \"@gmail.com\";\nvar username = \"jim\" + random;\n\npm.collectionVariables.set(\"email_env\", useremail);\npm.collectionVariables.set(\"name_env\", username);"
-            ]
-          }
-        },
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "\r\n//chaining\r\nconst jsonData = pm.response.json()\r\npm.collectionVariables.set(\"userid_env\", jsonData.id)\r\n\r\n//Status code validation\r\npm.test(\"Successfull POST request\", ()=> {pm.response.to.have.status(201)})\r\n\r\npm.test(\"Status code has string\", ()=> {pm.response.to.have.status(\"Created\")})\r\n\r\n//Header validation\r\npm.test(\"Content-type header is present\", ()=> {pm.response.to.have.header(\"content-type\")})\r\n\r\npm.test(\"Content-type header value is application/json\", ()=> {pm.expect (pm.response.headers.get(\"content-type\")).to.eql(\"application/json; charset=utf-8\")})\r\n\r\n//Response time validation\r\npm.test(\"Response time is less than 600ms\", ()=> { pm.expect (pm.response.responseTime).to.be.below(600) })\r\n\r\n//Response body validation\r\npm.test(\"Response has required fields\", ()=> { pm. expect (jsonData).to.have.property(\"id\");\r\npm.expect (jsonData).to.have.property(\"name\");\r\n    pm.expect(jsonData).to.have.property(\"email\");\r\n    pm.expect(jsonData).to.have.property(\"gender\");\r\n    pm.expect(jsonData).to.have.property(\"status\");\r\n})\r\n\r\npm.test(\"Response fields have required data types\", ()=> { pm.expect (jsonData.id).to.be.a(\"number\");\r\npm.expect (jsonData.name).to.be.a(\"string\");\r\n    pm.expect(jsonData.email).to.be.a(\"string\");\r\n    pm.expect(jsonData.gender).to.be.a(\"string\");\r\n    pm.expect(jsonData.status).to.be.a(\"string\");\r\n    \r\n})\r\n pm.test(\"Response values\", ()=> {pm.expect (jsonData.name).to.eql(pm.collectionVariables.get(\"name_env\"));\r\n pm.expect (jsonData.email).to.eql(pm.collectionVariables.get(\"email_env\"));\r\n pm.expect(jsonData.gender).to.eql(\"female\");\r\n pm.expect(jsonData.status).to.eql(\"inactive\")\r\n })"
-            ]
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n    \"name\": \"{{name_env}}\",\n    \"gender\": \"female\",\n    \"email\": \"{{email_env}}\",\n    \"status\": \"inactive\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+          "name": "empty name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "//status code validation\r\npm.test(\"Unsuccessful POST request\", ()=> {pm.response.to.have.status(422)})\r\n\r\n//response body error message\r\nconst jsonData = pm.response.json()\r\npm.test(\"Error field is name\", ()=> {pm.expect(jsonData[0].field).to.eql(\"name\")})\r\npm.test(\"Error message validation\", ()=> {pm.expect(jsonData[0].message).to.eql(\"can't be blank\")})"
+                ]
+              }
             }
-          }
-        },
-        "url": {
-          "raw": "https://gorest.co.in/public/v2/users",
-          "protocol": "https",
-          "host": [
-            "gorest",
-            "co",
-            "in"
           ],
-          "path": [
-            "public",
-            "v2",
-            "users"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "getting user",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "const jsonData = pm.response.json();\n\n//Status code validation\npm.test(\"Successfull POST request\", ()=> {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Status code has string\", ()=> {pm.response.to.have.status(200)});\n\n//Response body validation\npm.test (\"Response body values\", ()=> {\n    pm.expect (jsonData.id).to.eql(pm.collectionVariables.get(\"userid_env\")); \n    pm.expect (jsonData.name).to.eql(pm.collectionVariables.get(\"name_env\"));\n    pm.expect (jsonData.email).to.eql(pm.collectionVariables.get(\"email_env\"));\n    pm.expect(jsonData.gender).to.eql(\"female\");\n    pm.expect(jsonData.status).to.eql(\"inactive\");\n});"
-            ]
-          }
-        }
-      ],
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "https://gorest.co.in/public/v2/users/{{userid_env}}",
-          "protocol": "https",
-          "host": [
-            "gorest",
-            "co",
-            "in"
-          ],
-          "path": [
-            "public",
-            "v2",
-            "users",
-            "{{userid_env}}"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "update",
-      "event": [
-        {
-          "listen": "prerequest",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "var random = Math.random().toString(36).substring(2);\r\n\r\nvar useremail = \"jim\" + random + \"@gmail.com\";\r\nvar username = \"jim\" + random;\r\n\r\npm.collectionVariables.set(\"email_env\", useremail);\r\npm.collectionVariables.set(\"name_env\", username)"
-            ]
-          }
-        },
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test(\"Verify updated data\", ()=> {\r\n    var jsonData = pm.response.json();\r\n    pm.expect(jsonData.status).to.eql(\"active\");\r\n    })\r\n\r\npm.test(\"Status code is 200\", ()=> {pm.expect(pm.response.to.have.status(200))})\r\npm.test(\"Status code has string\", ()=> {pm.expect(pm.response.to.be.ok)})"
-            ]
-          }
-        }
-      ],
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"name\": \"\",\r\n\"email\": \"joe@gmail.com\",\r\n\"gender\": \"female\",\r\n\"status\": \"inactive\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users"
+              ]
+            }
           },
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n    \"name\": \"{{name_env}}\",\n    \"email\": \"{{email_env}}\",\n    \"gender\": \"female\",\n    \"status\": \"active\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "response": []
         },
-        "url": {
-          "raw": "https://gorest.co.in/public/v2/users/{{userid_env}}",
-          "protocol": "https",
-          "host": [
-            "gorest",
-            "co",
-            "in"
+        {
+          "name": "invalid email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "//status code validation\r\npm.test(\"Unsuccessful POST request\", ()=> {pm.response.to.have.status(422)})\r\n\r\n//error message validation\r\nconst jsonData = pm.response.json()\r\n\r\npm.test(\"Error field\", () => { pm.expect(jsonData[0].field).to.eql(\"email\") })\r\n\r\npm.test(\"Error message validation\", () => { pm.expect(jsonData[0].message).to.eql(\"is invalid\")})"
+                ]
+              }
+            }
           ],
-          "path": [
-            "public",
-            "v2",
-            "users",
-            "{{userid_env}}"
-          ]
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"joe\",\n    \"email\": \"joegmail.com\",\n    \"gender\": \"male\",\n    \"status\": \"inactive\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "empty gender",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Unsuccesfull POST request\", () => { pm.response.to.have.status(422) })\r\n\r\n\r\nconst jsonData = pm.response.json()\r\npm.test(\"Error message for gender field\", () => {pm.expect(jsonData[0].field).to.eql(\"gender\")})\r\npm.test(\"Error message for gender field\", () => { pm.expect(jsonData[0].message).to.eql(\"can't be blank, can be male of female\") })"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"joe\",\n    \"email\": \"joe@gmail.com\",\n    \"gender\": \"\",\n    \"status\": \"inactive\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "invalid gender",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Unsuccessful POST request\" , ()=> {pm.response.to.have.status(422)})\r\n\r\nconst jsonData = pm.response.json();\r\npm.test(\"Error field validation\", () => { pm.expect(jsonData[0].field).to.equal(\"gender\") })\r\n\r\npm.test(\"Error message validation\", () => { pm.expect(jsonData[0].message).to.include(\"can't be blank, can be male of female\") })"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"joe\",\r\n    \"email\": \"joe@gmail.com\",\r\n    \"gender\": \"third\",\r\n    \"status\": \"inactive\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "empty status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Unsuccessful POST request\", ()=> {pm.response.to.have.status(422)})\r\n\r\nconst josnData = pm.response.json();\r\npm.test(\"error field validation\", () => { pm.expect(josnData[0].field).to.eql(\"status\") })\r\npm.test(\"error message validation\", () => { pm.expect(josnData[0].message).to.eql(\"can't be blank\") })"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"joe\",\n    \"email\": \"joe@gmail.com\",\n    \"gender\": \"male\",\n    \"status\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create new user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"joey\",\n    \"email\": \"joey@gmail.com\",\n    \"gender\": \"male\",\n    \"status\": \"inactive\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "duplicate email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Unsuccessful POST request\", () => { pm.response.to.have.status(422) })\r\n\r\nconst jsonData = pm.response.json();\r\npm.test(\"Error field validation\", ()=> {pm.expect(jsonData[0].field).to.eql(\"email\")})\r\n\r\npm.test(\"Error message for email field\", () => { pm.expect(pm.response.json()[0].message).to.eql(\"has already been taken\") })"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"joe\",\r\n    \"email\": \"joey@gmail.com\",\r\n    \"gender\": \"female\",\r\n    \"status\": \"inactive\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "invalid token",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test (\"Unsuccessfull POST request\", ()=> {pm.response.to.have.status(401)})\r\n\r\nconst jsonData = pm.response.json()\r\n\r\npm.test(\"error mesage validation\", ()=> {pm.expect(jsonData.message).to.eql(\"Authentication failed\") })"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"phyllis\",\r\n    \"email\": \"phyllis@gmail.com\",\r\n    \"gender\": \"female\",\r\n    \"status\": \"active\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
     },
     {
-      "name": "New Request",
-      "event": [
+      "name": "request chaining, dynamic data generation, response validations",
+      "item": [
         {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.collectionVariables.unset(\"userid_env\");\r\npm.collectionVariables.unset(\"name_env\");\r\npm.collectionVariables.unset(\"email_env\")\r\n\r\npm.test(\"Status code is 204\", ()=> {pm.expect (pm.response.to.have.status(204)) })\r\npm.test(\"Status code has string\", () => { pm.expect(pm.response.to.have.status(\"No Content\")) })\r\n"
-            ]
-          }
-        }
-      ],
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "https://gorest.co.in/public/v2/users/{{userid_env}}",
-          "protocol": "https",
-          "host": [
-            "gorest",
-            "co",
-            "in"
+          "name": "create user",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var random = Math.random().toString(36).substring(2)\n\nvar name = \"jim\"+ random\nvar email = \"jim\" + random + \"@gmail.com\"\n\npm.collectionVariables.set(\"name\", name)\npm.collectionVariables.set(\"email\", email)  "
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "//chaining\nconst jsonData = pm.response.json()\npm.collectionVariables.set(\"userid_env\", jsonData.id)\n\n//Status code validation\npm.test(\"Successfull POST request\", ()=> {pm.response.to.have.status(201)})\n\npm.test(\"Status code has string\", ()=> {pm.response.to.have.status(\"Created\")})\n\n//Header validation\npm.test(\"Content-type header is present\", ()=> {pm.response.to.have.header(\"content-type\")})\n\npm.test(\"Content-type header value is application/json\", ()=> {pm.expect (pm.response.headers.get(\"content-type\")).to.eql(\"application/json; charset=utf-8\")})\n\n//Response time validation\npm.test(\"Response time is less than 2000ms\", ()=> { pm.expect (pm.response.responseTime).to.be.below(2000) })\n\n//Response body validation\npm.test(\"Response has required fields\", ()=> { pm. expect (jsonData).to.have.property(\"id\");\npm.expect (jsonData).to.have.property(\"name\");\n    pm.expect(jsonData).to.have.property(\"email\");\n    pm.expect(jsonData).to.have.property(\"gender\");\n    pm.expect(jsonData).to.have.property(\"status\");\n})\n\npm.test(\"Response fields have required data types\", ()=> { pm.expect (jsonData.id).to.be.a(\"number\");\npm.expect (jsonData.name).to.be.a(\"string\");\n    pm.expect(jsonData.email).to.be.a(\"string\");\n    pm.expect(jsonData.gender).to.be.a(\"string\");\n    pm.expect(jsonData.status).to.be.a(\"string\");\n    \n})\n pm.test(\"Response values\", ()=> {pm.expect (jsonData.name).to.eql(pm.collectionVariables.get(\"name\"));\n pm.expect (jsonData.email).to.eql(pm.collectionVariables.get(\"email\"));\n pm.expect (jsonData.gender).to.eql(\"male\");\n pm.expect(jsonData.status).to.eql(\"inactive\")\n })\n\n //JSON Schema validation\n var schema =\n {\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"integer\"\n    },\n    \"name\": {\n      \"type\": \"string\"\n    },\n    \"email\": {\n      \"type\": \"string\"\n    },\n    \"gender\": {\n      \"type\": \"string\"\n    },\n    \"status\": {\n      \"type\": \"string\"\n    }\n  }\n };\n\n pm.test(\"Validate JSON schema\", () => {\n     pm.response.to.have.jsonSchema(schema);\n });"
+                ]
+              }
+            }
           ],
-          "path": [
-            "public",
-            "v2",
-            "users",
-            "{{userid_env}}"
-          ]
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{name}}\",\n    \"email\": \"{{email}}\",\n    \"gender\": \"male\",\n    \"status\": \"inactive\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getting user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();\n\n//Status code validation\npm.test(\"Successfull POST request\", ()=> {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Status code has string\", ()=> {pm.response.to.have.status(200)});\n\n//Response body validation\npm.test (\"Response body values\", ()=> {\n    pm.expect (jsonData.id).to.eql(pm.collectionVariables.get(\"userid_env\")); \n    pm.expect (jsonData.name).to.eql(pm.collectionVariables.get(\"name\"));\n    pm.expect (jsonData.email).to.eql(pm.collectionVariables.get(\"email\"));\n    pm.expect(jsonData.gender).to.eql(\"male\");\n    pm.expect(jsonData.status).to.eql(\"inactive\");\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users/{{userid_env}}",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users",
+                "{{userid_env}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update user",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var random = Math.random().toString(36).substring(2)\r\n\r\nvar name = \"jim\"+ random\r\nvar email = \"jim\" + random + \"@gmail.com\"\r\n\r\npm.collectionVariables.set(\"name\", name)\r\npm.collectionVariables.set(\"email\", email)"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Verify updated data\", ()=> {\r\n    var jsonData = pm.response.json();\r\n    pm.expect(jsonData.status).to.eql(\"active\");\r\n    })\r\n\r\npm.test(\"Status code is 200\", ()=> {pm.expect(pm.response.to.have.status(200))})\r\npm.test(\"Status code has string\", ()=> {pm.expect(pm.response.to.be.ok)})"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{name}}\",\n    \"email\": \"{{email}}\",\n    \"gender\": \"male\",\n    \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users/{{userid_env}}",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users",
+                "{{userid_env}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.unset(\"userid_env\");\r\npm.collectionVariables.unset(\"name_env\");\r\npm.collectionVariables.unset(\"email_env\")\r\n\r\npm.test(\"Status code is 204\", ()=> {pm.expect (pm.response.to.have.status(204)) })\r\npm.test(\"Status code has string\", () => { pm.expect(pm.response.to.have.status(\"No Content\")) })\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users/{{userid_env}}",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users",
+                "{{userid_env}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Unsuccesfull GET request\", ()=> {pm.response.to.have.status(404)})"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://gorest.co.in/public/v2/users/{{userid_env}}",
+              "protocol": "https",
+              "host": [
+                "gorest",
+                "co",
+                "in"
+              ],
+              "path": [
+                "public",
+                "v2",
+                "users",
+                "{{userid_env}}"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
     }
   ],
   "auth": {
@@ -203,10 +604,54 @@
       }
     ]
   },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          ""
+        ],
+        "packages": {},
+        "requests": {},
+        "type": "text/javascript"
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          ""
+        ],
+        "packages": {},
+        "requests": {},
+        "type": "text/javascript"
+      }
+    }
+  ],
   "variable": [
     {
       "key": "id",
       "value": ""
+    },
+    {
+      "key": "email",
+      "value": ""
+    },
+    {
+      "key": "name",
+      "value": ""
+    },
+    {
+      "key": "auth_secret_0hk4",
+      "secret": true,
+      "source": {
+        "provider": "postman",
+        "postman": {
+          "type": "cloud",
+          "secretId": "secret",
+          "vaultId": "vault"
+        }
+      }
     }
   ]
 }
